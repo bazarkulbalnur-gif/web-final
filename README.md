@@ -5,9 +5,6 @@ project (same topic, same team, same pages) and turns it into a client-side web 
 **object-oriented JavaScript**, **persistent localStorage data**, a **CRUD feature**, **search / filter / sort** and a
 **statistics dashboard**. All earlier HTML, CSS, Bootstrap, JavaScript, DOM, validation and jQuery features still work.
 
-## Links
-* **Published website:** _paste your GitHub Pages / Netlify link here_
-* **Source code repository:** _paste your GitHub repository link here_
 
 ## Group members (Team "AI love")
 | Member | Contribution (edit this table to match your real work) |
