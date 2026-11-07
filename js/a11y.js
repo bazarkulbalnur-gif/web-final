@@ -1,18 +1,14 @@
 'use strict';
 
-/**
- * a11y.js - accessibility feature: text-size controls (A- / A+) in the navbar.
- * The chosen size is saved in localStorage and restored on every page.
- */
 const FONT_KEY = 'wanderlens:font-size';
-const FONT_STEPS = [85, 100, 115, 130, 150];   // percent of the browser default size
+const FONT_STEPS = [85, 100, 115, 130, 150];
 
 class TextSizeControl {
     constructor() {
         this.store = new JsonStore(FONT_KEY, 100);
         const saved = this.store.read();
         this.percent = FONT_STEPS.includes(saved) ? saved : 100;
-        this.apply();                           // apply immediately -> no size "jump" while loading
+        this.apply();
     }
 
     apply() {
@@ -30,7 +26,6 @@ class TextSizeControl {
         this.apply();
     }
 
-    /** Add the two buttons to the navbar. */
     mount() {
         const actions = document.querySelector('.wl-actions');
         if (!actions) { return; }
