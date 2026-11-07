@@ -138,22 +138,17 @@ main { background-image: radial-gradient(circle at 90% 0%, rgba(26,74,90,.07), t
 @media (prefers-reduced-motion: reduce) { * { animation: none !important; transition: none !important; } }
 
 
-/* =====================================================================
-   FINAL PROJECT ADDITIONS (live data, my trips, accessibility)
-   ===================================================================== */
 a.icon-btn { text-decoration: none; }
 .text-size-btn { width: 36px; height: 36px; font-size: 13px; font-weight: 700; }
 .text-size-btn:disabled { opacity: .4; cursor: not-allowed; }
 .icon-btn:focus-visible, .filter-btn:focus-visible, .btn-wl:focus-visible, .fav-btn:focus-visible,
 .form-control:focus-visible, .form-select:focus-visible { outline: 3px solid var(--link); outline-offset: 2px; }
 
-/* statistics tiles (Live Coast + My Trips) */
 .stat-tile { background: var(--soft); border-radius: 1rem; padding: 1rem 1.25rem; height: 100%; }
 .stat-tile .stat-value { font-family: 'Playfair Display', Georgia, serif; font-size: 1.5rem; font-weight: 700; color: var(--text); line-height: 1.2; }
 .stat-tile .stat-small { font-size: 13px; color: var(--text-2); }
 .stat-tile .stat-caption { margin-top: .25rem; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); }
 
-/* live weather cards */
 .spot-temp { font-size: 2.4rem; font-weight: 700; line-height: 1; color: var(--text); }
 .spot-icon { font-size: 1.8rem; color: var(--link); margin-bottom: .25rem; }
 .spot-metric { white-space: nowrap; }
@@ -161,7 +156,6 @@ a.icon-btn { text-decoration: none; }
 .score-fill { height: 100%; border-radius: 4px; background: var(--link); transition: width .6s ease; }
 .spinner-brand { color: var(--link); }
 
-/* my trips */
 .trip-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 1rem; }
 .trip-item { border-radius: 1rem; }
 .trip-item summary { cursor: pointer; color: var(--link); }
