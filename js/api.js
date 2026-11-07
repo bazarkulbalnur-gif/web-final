@@ -1,12 +1,5 @@
 'use strict';
 
-/**
- * api.js - talks to the Open-Meteo forecast API (https://open-meteo.com).
- * It is free and needs NO API key, so nothing secret is stored in the public code.
- *
- * One request returns current conditions + today's min/max for every destination at once:
- *   GET https://api.open-meteo.com/v1/forecast?latitude=a,b&longitude=c,d&current=...&daily=...
- */
 class WeatherApi {
     constructor(options) {
         const o = options || {};
@@ -22,10 +15,6 @@ class WeatherApi {
             '&daily=temperature_2m_max,temperature_2m_min&forecast_days=1&timezone=auto';
     }
 
-    /**
-     * Fetch the weather for a list of CoastalSpot objects.
-     * Resolves with an array (same order as `spots`); rejects with an Error that has a readable message.
-     */
     async fetchWeather(spots) {
         if (spots.length === 0) { return []; }
         const controller = new AbortController();
@@ -36,7 +25,7 @@ class WeatherApi {
                 throw new Error('The weather service answered with status ' + response.status + '.');
             }
             const json = await response.json();
-            const list = Array.isArray(json) ? json : [json];   // one location -> object, many -> array
+            const list = Array.isArray(json) ? json : [json];
             if (list.length !== spots.length) {
                 throw new Error('The weather service returned an unexpected amount of data.');
             }
