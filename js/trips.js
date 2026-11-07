@@ -1,14 +1,5 @@
 'use strict';
 
-/**
- * trips.js - "My Trips" feature.
- *   - CRUD (create, read, update, delete) for saved trips, stored in localStorage through TripManager,
- *   - search + sort of the saved list,
- *   - statistics panel with a bar chart built from the saved data,
- *   - "Save to My Trips" button on the Plan Your Trip page,
- *   - trip counter badge in the navbar (all pages).
- * Form validation reuses the helper functions from validation.js.
- */
 const TRIPS_KEY = 'wanderlens:trips';
 
 let tripManagerInstance = null;
@@ -25,9 +16,6 @@ function updateTripBadge() {
     badge.classList.toggle('d-none', count === 0);
 }
 
-/* ---------------------------------------------------------------
-   Plan Your Trip page: save the generated plan
----------------------------------------------------------------- */
 function initPlanSave() {
     const button = document.getElementById('save-trip-btn');
     const form = document.getElementById('plan-form');
@@ -58,14 +46,10 @@ function initPlanSave() {
         button.disabled = true;
         button.innerHTML = '<i class="fa-solid fa-check me-2"></i>Saved';
     });
-    // any change (or a new itinerary) allows saving again
     form.addEventListener('change', resetButton);
     form.addEventListener('submit', resetButton);
 }
 
-/* ---------------------------------------------------------------
-   My Trips page
----------------------------------------------------------------- */
 function initTripsPage() {
     const manager = getTripManager();
     const $ = function (id) { return document.getElementById(id); };
@@ -75,7 +59,6 @@ function initTripsPage() {
     let editingId = null;
     let pendingAction = null;
 
-    /* ----- form set-up ----- */
     durations.forEach(function (d) {
         const option = createEl('option', '', d.label + ' ($' + d.price + ')');
         option.value = d.id;
@@ -105,7 +88,7 @@ function initTripsPage() {
         email: function () { return checkRequired(val('email'), 'Email') || checkEmail(val('email')); },
         startDate: function () {
             const original = editingId ? manager.get(editingId) : null;
-            if (original && val('startDate') === original.startDate) { return ''; }   // keep an old date while editing
+            if (original && val('startDate') === original.startDate) { return ''; }
             return checkFutureDate(val('startDate'));
         },
         duration: function () { return val('duration') === '' ? 'Please choose a duration.' : ''; },
@@ -179,7 +162,6 @@ function initTripsPage() {
     });
     $('trip-cancel').addEventListener('click', resetForm);
 
-    /* ----- delete confirmation (Bootstrap modal) ----- */
     const modalEl = $('confirmModal');
     function confirmAction(message, action) {
         $('confirm-text').textContent = message;
@@ -191,7 +173,6 @@ function initTripsPage() {
         if (pendingAction) { pendingAction(); pendingAction = null; }
     });
 
-    /* ----- list ----- */
     function createTripItem(trip) {
         const item = createEl('li', 'wl-card trip-item p-3 p-md-4');
         const top = createEl('div', 'd-flex flex-wrap justify-content-between gap-2');
@@ -259,7 +240,6 @@ function initTripsPage() {
     });
     $('trip-sort').addEventListener('change', render);
 
-    /* ----- statistics panel + bar chart ----- */
     function createStat(caption, value) {
         const col = createEl('div', 'col-6 col-lg-3');
         const tile = createEl('div', 'stat-tile');
