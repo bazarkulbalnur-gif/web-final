@@ -1,18 +1,5 @@
 'use strict';
 
-/**
- * models.js - the OOP layer of the project.
- *
- *  Trip         one saved trip (a record in "My Trips"); knows how to validate itself and calculate its price.
- *  TripManager  CRUD + search/sort + statistics for many Trip objects, persisted through JsonStore (localStorage).
- *  CoastalSpot  one destination on the "Live Coast" page; receives data from the weather API and turns it into
- *               values the interface can show (condition, temperature in C/F, beach score).
- *
- * Existing helpers from earlier stages are reused instead of duplicated:
- *   calculateTotal (main.js), buildItinerary / checkRequired / checkEmail / checkRange ... (validation.js),
- *   durations and activities (data.js).
- */
-
 class Trip {
     constructor(data) {
         const d = data || {};
@@ -30,7 +17,6 @@ class Trip {
         return 't' + Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
     }
 
-    /** "2026-12-05" -> Date at local midnight, or null when the text is not a real calendar date. */
     static parseDate(iso) {
         const match = /^(\d{4})-(\d{2})-(\d{2})$/.exec(iso || '');
         if (!match) { return null; }
@@ -68,16 +54,11 @@ class Trip {
         return Trip.toIso(start);
     }
 
-    /** Day-by-day plan (reuses buildItinerary from validation.js). */
     itinerary() {
         const labels = this.activities.map(function (a) { return a.label; });
         return labels.length && this.days ? buildItinerary(this.days, labels) : [];
     }
 
-    /**
-     * Returns a list of error messages (empty list = valid).
-     * options.checkPast = true  -> the start date may not be in the past (used when creating / editing).
-     */
     validate(options) {
         const opts = options || {};
         const errors = [];
@@ -104,14 +85,12 @@ class Trip {
         };
     }
 
-    /** Rebuild a Trip from stored data; returns null for broken records so they are skipped safely. */
     static fromJSON(obj) {
         if (!obj || typeof obj !== 'object' || Array.isArray(obj)) { return null; }
         const trip = new Trip(obj);
         return trip.validate().length === 0 ? trip : null;
     }
 }
-
 
 class TripManager {
     constructor(storageKey) {
@@ -132,15 +111,13 @@ class TripManager {
         return this.trips.find(function (t) { return t.id === id; }) || null;
     }
 
-    /** Create. Returns true when the trip was stored. */
     add(trip) {
         this.trips.push(trip);
         if (this.save()) { return true; }
-        this.trips.pop();            // storage failed -> undo
+        this.trips.pop();
         return false;
     }
 
-    /** Update: merge new field values into an existing trip (id and creation time are kept). */
     update(id, fields) {
         const index = this.trips.findIndex(function (t) { return t.id === id; });
         if (index === -1) { return false; }
@@ -151,7 +128,6 @@ class TripManager {
         return false;
     }
 
-    /** Delete one trip. */
     remove(id) {
         const before = this.trips.slice();
         this.trips = this.trips.filter(function (t) { return t.id !== id; });
@@ -160,7 +136,6 @@ class TripManager {
         return false;
     }
 
-    /** Delete everything. */
     clear() {
         const before = this.trips;
         this.trips = [];
@@ -169,7 +144,6 @@ class TripManager {
         return false;
     }
 
-    /** Search by name / email / duration / activity and sort the result. */
     search(query, sortKey) {
         const text = String(query || '').trim().toLowerCase();
         const sorters = {
@@ -189,7 +163,6 @@ class TripManager {
             .sort(sorters[sortKey] || sorters.newest);
     }
 
-    /** Numbers for the statistics panel. */
     stats() {
         const count = this.trips.length;
         const totalCost = this.trips.reduce(function (sum, t) { return sum + t.total; }, 0);
@@ -203,7 +176,6 @@ class TripManager {
     }
 }
 
-
 class CoastalSpot {
     constructor(data) {
         this.id = data.id;
@@ -212,10 +184,9 @@ class CoastalSpot {
         this.region = data.region;
         this.lat = data.lat;
         this.lon = data.lon;
-        this.weather = null;         // filled by applyWeather()
+        this.weather = null;
     }
 
-    /** Take one item of the API answer. Returns false (and keeps weather = null) when the data is unusable. */
     applyWeather(payload) {
         const c = payload && payload.current;
         const d = payload && payload.daily;
@@ -236,7 +207,6 @@ class CoastalSpot {
 
     get hasWeather() { return this.weather !== null; }
 
-    /** WMO weather code -> label + Font Awesome icon. */
     get condition() {
         const code = this.weather ? this.weather.code : -1;
         if (code === 0) { return { label: 'Clear sky', icon: 'fa-sun' }; }
@@ -252,14 +222,12 @@ class CoastalSpot {
         return { label: 'No data', icon: 'fa-cloud' };
     }
 
-    /** Convert a Celsius value to the chosen unit ("C" or "F"). */
     static convert(celsius, unit) {
         return unit === 'F' ? celsius * 9 / 5 + 32 : celsius;
     }
 
     tempIn(unit) { return this.weather ? CoastalSpot.convert(this.weather.temp, unit) : NaN; }
 
-    /** Simple 0-100 "beach day" score: best at ~27 C, calm wind, no rain / storm. */
     get beachScore() {
         if (!this.weather) { return 0; }
         const w = this.weather;
