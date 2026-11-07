@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Live Coast - Wanderlens Coastal Pass</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="css/style.css?v=3">
+</head>
+<body class="d-flex flex-column min-vh-100 page-warm">
+
+    <header class="wl-sticky">
+        <nav class="wl-navbar" aria-label="Main navigation">
+            <div class="container-xl px-3 px-lg-5 wl-nav-inner">
+                <a class="navbar-brand" href="index.html">
+                    <i class="fa-solid fa-water fs-3 text-brand"></i>
+                    <span><span class="brand-title">Wanderlens</span><span class="brand-sub">COASTAL PASS</span></span>
+                </a>
+                <div class="d-flex align-items-center gap-2 wl-actions">
+                    <button type="button" id="theme-toggle" class="icon-btn" aria-label="Switch light/dark theme"><i class="fa-solid fa-moon"></i></button>
+                    <button type="button" class="icon-btn" data-bs-toggle="offcanvas" data-bs-target="#favoritesPanel" aria-label="Open favorites">
+                        <i class="fa-solid fa-heart"></i><span id="fav-count" class="fav-count d-none">0</span>
+                    </button>
+                    <a href="my-trips.html" class="icon-btn" aria-label="My trips">
+                        <i class="fa-solid fa-suitcase-rolling"></i><span id="trip-count" class="fav-count d-none">0</span>
+                    </a>
+                    <a href="pass.html" class="btn-wl d-none d-md-inline-block">Get Coastal Pass</a>
+                </div>
+                <ul class="wl-links" id="mainNav"><li><a class="nav-link" href="index.html">Home</a></li><li><a class="nav-link" href="discover.html">Discover</a></li><li><a class="nav-link" href="attractions.html">Attractions</a></li><li><a class="nav-link" href="experiences.html">Experiences</a></li><li><a class="nav-link active" href="live.html" aria-current="page">Live Coast</a></li><li><a class="nav-link" href="plan-trip.html">Plan Your Trip</a></li><li><a class="nav-link" href="about.html">About</a></li><li><a class="nav-link" href="contact.html">Contact</a></li><li><a class="nav-link" href="pass.html">Get Pass</a></li></ul>
+            </div>
+        </nav>
+    </header>
+
+    <main class="py-5">
+        <div class="container-xl px-3 px-lg-5" style="max-width:1320px">
+            <div class="text-center mx-auto mb-5" style="max-width:42rem">
+                <span class="badge-soft mb-3">Live Data</span>
+                <h1 class="page-title mt-2 mb-3">Live Coastal Conditions</h1>
+                <p class="page-sub">Current weather for popular coastal destinations, loaded live from the Open-Meteo API. Find the best beach day for your trip.</p>
+            </div>
+
+            <div class="row g-3 align-items-center mb-3">
+                <div class="col-12 col-md-5">
+                    <label for="live-search" class="visually-hidden">Search destinations</label>
+                    <div class="input-group"><span class="input-group-text"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="search" id="live-search" class="form-control" placeholder="Search city or country (Esc to clear)" autocomplete="off"></div>
+                </div>
+                <div class="col-12 col-md-7 d-flex flex-wrap gap-2 justify-content-md-end" role="group" aria-label="Filter by region">
+                    <button type="button" class="filter-btn active" data-region="All">All</button>
+                    <button type="button" class="filter-btn" data-region="Europe">Europe</button>
+                    <button type="button" class="filter-btn" data-region="Asia">Asia</button>
+                    <button type="button" class="filter-btn" data-region="Americas">Americas</button>
+                    <button type="button" class="filter-btn" data-region="Oceania">Oceania</button>
+                </div>
+            </div>
+            <div class="d-flex flex-wrap align-items-center gap-3 mb-4">
+                <div class="d-flex align-items-center gap-2">
+                    <label for="live-sort" class="small fw-semibold mb-0">Sort by</label>
+                    <select id="live-sort" class="form-select form-select-sm w-auto">
+                        <option value="name">Name (A-Z)</option>
+                        <option value="warm">Warmest first</option>
+                        <option value="cool">Coolest first</option>
+                        <option value="wind">Windiest first</option>
+                        <option value="beach">Best beach day</option>
+                    </select>
+                </div>
+                <button type="button" id="live-unit" class="filter-btn" aria-label="Temperature unit">&deg;C</button>
+                <button type="button" id="live-refresh" class="filter-btn"><i class="fa-solid fa-rotate me-1"></i>Refresh</button>
+                <span id="live-updated" class="small text-muted-brand"></span>
+            </div>
+
+            <div id="live-note" class="alert alert-warning d-none" role="alert"></div>
+            <p id="live-status" class="visually-hidden" role="status" aria-live="polite"></p>
+
+            <div id="live-loading" class="text-center py-5">
+                <div class="spinner-border spinner-brand" role="status"><span class="visually-hidden">Loading</span></div>
+                <p class="text-muted-brand mt-3 mb-0">Loading live weather...</p>
+            </div>
+            <div id="live-error" class="text-center py-5 d-none" role="alert">
+                <i class="fa-solid fa-triangle-exclamation fs-1 text-brand mb-3"></i>
+                <h2 class="h5">Weather could not be loaded</h2>
+                <p id="live-error-text" class="text-muted-brand"></p>
+                <button type="button" id="live-retry" class="btn-wl">Try again</button>
+            </div>
+            <div id="live-empty" class="text-center py-5 d-none">
+                <i class="fa-solid fa-umbrella-beach fs-1 text-brand mb-3"></i>
+                <p id="live-empty-text" class="text-muted-brand"></p>
+                <button type="button" id="live-empty-reset" class="btn-wl d-none">Reset filters</button>
+            </div>
+            <div id="live-content" class="d-none">
+                <div class="row g-3 mb-4" id="live-stats"></div>
+                <div class="row g-4" id="live-grid"></div>
+                <p class="small text-muted-brand mt-4 mb-0">Weather data by <a href="https://open-meteo.com/" class="text-brand">Open-Meteo.com</a>. The beach score is a simple estimate from temperature, wind and rain.</p>
+            </div>
+        </div>
+    </main>
+
+    <footer class="wl-footer">
+        <p class="mb-0">&copy; 2026 Wanderlens Coastal Pass. All rights reserved. Designed by Balnur &amp; Ayazhan &middot; Final Project.</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
+    <script src="js/data.js?v=3"></script>
+    <script src="js/main.js?v=3"></script>
+    <script src="js/validation.js?v=3"></script>
+    <script src="js/jquery-effects.js?v=3"></script>
+    <script src="js/utils.js?v=3"></script>
+    <script src="js/storage.js?v=3"></script>
+    <script src="js/models.js?v=3"></script>
+    <script src="js/a11y.js?v=3"></script>
+    <script src="js/api.js?v=3"></script>
+    <script src="js/trips.js?v=3"></script>
+    <script src="js/live.js?v=3"></script>
+</body>
+</html>
