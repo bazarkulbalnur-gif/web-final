@@ -1,12 +1,5 @@
 'use strict';
 
-/**
- * live.js - interface logic of the "Live Coast" page.
- *   data    : coastalSpots (data.js) -> CoastalSpot objects (models.js)
- *   API     : WeatherApi (api.js), fetch + async/await
- *   storage : preferences (unit, search, region, sort) and a copy of the last successful answer in localStorage
- *   UI      : loading / success / empty / error states, search + filter + sort, statistics panel
- */
 const LIVE_PREFS_KEY = 'wanderlens:live-prefs';
 const LIVE_CACHE_KEY = 'wanderlens:live-cache';
 const LIVE_REGIONS = ['All', 'Europe', 'Asia', 'Americas', 'Oceania'];
@@ -27,7 +20,6 @@ function initLivePage() {
         regionButtons: document.querySelectorAll('[data-region]')
     };
 
-    /* ---------- preferences (localStorage) ---------- */
     function loadPrefs() {
         const saved = prefsStore.read();
         const p = saved && typeof saved === 'object' ? saved : {};
@@ -41,7 +33,6 @@ function initLivePage() {
     const state = loadPrefs();
     function savePrefs() { prefsStore.write(state); }
 
-    /* ---------- screen states ---------- */
     function showOnly(name) {
         els.loading.classList.toggle('d-none', name !== 'loading');
         els.error.classList.toggle('d-none', name !== 'error');
@@ -58,7 +49,6 @@ function initLivePage() {
         els.note.classList.toggle('d-none', message === '');
     }
 
-    /* ---------- data ---------- */
     function applyPayloads(list) {
         let ok = 0;
         spots.forEach(function (spot, i) { if (spot.applyWeather(list[i])) { ok++; } });
@@ -84,7 +74,6 @@ function initLivePage() {
         } catch (error) {
             const cached = readCache();
             if (cached) {
-                // API failed but an earlier answer exists -> show it and say so clearly
                 applyPayloads(spots.map(function (s) { return cached.payloads[s.id]; }));
                 els.updated.textContent = 'Saved copy from ' + formatTime(cached.savedAt);
                 setNote(error.message + ' Showing the last saved data instead.');
@@ -100,7 +89,6 @@ function initLivePage() {
         render();
     }
 
-    /* ---------- filter + sort ---------- */
     function visibleSpots() {
         const text = state.query.trim().toLowerCase();
         const list = spots.filter(function (s) {
@@ -125,7 +113,6 @@ function initLivePage() {
         return list.sort(sorters[state.sort]);
     }
 
-    /* ---------- rendering ---------- */
     function degrees(celsius) { return Math.round(CoastalSpot.convert(celsius, state.unit)) + '\u00B0' + state.unit; }
 
     function createStat(caption, value, small) {
@@ -228,7 +215,6 @@ function initLivePage() {
         showOnly('content');
     }
 
-    /* ---------- controls ---------- */
     function syncControls() {
         els.search.value = state.query;
         els.sort.value = state.sort;
